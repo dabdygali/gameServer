@@ -1,12 +1,12 @@
 import { FastifyInstance } from 'fastify'
 import { IHandler } from '../../pkg/handler/handler'
-import { pingHandler } from './handlers/ping'
+import { restHandler } from './handlers/restHandler'
 
 const routes: IHandler[] = [
   {
-    method: 'GET',
-    route: '/ping',
-    handler: pingHandler
+    method: 'POST',
+    route: '/game/internal/match',
+    handler: restHandler,
   }
 ]
 
