@@ -1,6 +1,6 @@
 import Client from "../../../pkg/ws/client";
 import WebSocketRequest from "../../../pkg/ws/request";
-import WS_CLIENT from "./client";
+import WS_CLIENT from "./handlers";
 
 export default function playerStop(client:Client, request: WebSocketRequest<WS_CLIENT>) {
     console.log(`Player ${client.id} is stopping`);

@@ -1,5 +1,5 @@
 import Client from "../../pkg/ws/client";
-import syncData from "./server/syncData";
+import syncData from "./serverSideHandlers/syncData";
 
 const playerSpeed = 0.5
 
