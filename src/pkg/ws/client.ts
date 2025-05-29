@@ -14,32 +14,34 @@ const clientIdGenerator = generator();
 
 export default class Client {
     public id:number = clientIdGenerator.next();
+    private userId:number|undefined
     private conn:WebSocket;
 
     constructor(conn: WebSocket) {
         this.conn = conn;
     } 
-    private send(message: string): void {
-        if (this.conn.readyState === WebSocket.OPEN) {
-            this.conn.send(message);
-        }
-    }
 
     public close(code: number = 1000, reason: string = ''): void {
         this.conn.close(code, reason);
     }
     
-    public info(type:string, payload: any): void {
-        this.send(JSON.stringify({
+    public send(type:string, payload?: any): void {
+        if (this.conn.readyState !== WebSocket.OPEN) {
+            return ;
+        }
+        this.conn.send(JSON.stringify({
             type: type,
             payload: payload
         }));
     }
     
     public error(message: string): void {
-        this.send(JSON.stringify({
-            type: 'error',
-            payload: message
-        }));
+        this.send("error", message)
+    }
+
+    public setUserId(id:number): void {
+        if (this.userId === undefined) {
+            this.userId = id;
+        }
     }
 }

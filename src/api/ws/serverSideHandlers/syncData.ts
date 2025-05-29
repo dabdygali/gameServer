@@ -10,5 +10,5 @@ type GameState = {
 
 
 export default function sendSync(client:Client, gameState: GameState) {
-    client.info(WS_SERVER.Sync, gameState)
+    client.send(WS_SERVER.Sync, gameState)
 }
