@@ -2,6 +2,7 @@ import { isTokenValid } from "../../../pkg/jwt/JwtGenerator";
 import Client from "../../../pkg/ws/client";
 import WebSocketRequest from "../../../pkg/ws/request";
 import example from "../exampleMatch";
+import sendAuthorized from "../serverSideHandlers/authorized";
 import sendUnautorized from "../serverSideHandlers/unauthorized";
 import WS_CLIENT from "./handlers";
 
@@ -26,4 +27,5 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
 
     // Assume user as this Client
     client.setUserId(tokenPayload.userId)
+    sendAuthorized(client)
 }

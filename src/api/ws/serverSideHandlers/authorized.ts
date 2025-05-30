@@ -5,6 +5,6 @@ type MatchEnterInfo = {
     timeLeft: number,
 }
 
-export default function authorized(client:Client, info?:MatchEnterInfo) {
+export default function sendAuthorized(client:Client, info?:MatchEnterInfo) {
     client.send(WS_SERVER.Authorized, info)
 }
