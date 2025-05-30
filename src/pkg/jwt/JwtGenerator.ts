@@ -1,13 +1,12 @@
 import { FastifyRequest } from 'fastify';
 import jwt from 'jsonwebtoken';
 import RadishClient from "../client/client"
-import Config from "../../config/Config"
 import { JwtGeneratorConfig } from "./JwtGeneratorConfig"
 import { JwtSignError, JwtCachError, JwtTokenVerificationError, JwtExtractionError } from './jwtErrors';
-import app from '../../app'; 
 
-function setUpJwtGenerator(): void {
-	JwtGenerator.getInstance();
+function setUpJwtGenerator(client:RadishClient): void {
+	JwtGenerator.getInstance()
+		.setRadishClient(client);
 	console.log("set up JwtGenerator instance successfuly")
 } 
 
@@ -34,13 +33,17 @@ class JwtGenerator {
 
 	private static instance: JwtGenerator;
 	private readonly config: JwtGeneratorConfig;
-	private radishClient: RadishClient;
+	private radishClient?: RadishClient;
 
 	private constructor() {
 		this.config = new JwtGeneratorConfig();
-		const host = Config.getInstance().getRadishHost();
-		const port = Config.getInstance().getRadishPort();
-		this.radishClient = app.cache;
+	}
+
+	public setRadishClient(client: RadishClient): void {
+		if (this.radishClient) {
+			return ;
+		}
+		this.radishClient = client;
 	}
 
 	public static getInstance(): JwtGenerator {
@@ -61,9 +64,12 @@ class JwtGenerator {
 	}
   
 	public async generateTokenPair(payload: JwtPayload): Promise<TokenPair> {
+		if (this.radishClient === undefined) {
+			throw JwtCachError;
+		}
 		const accessToken = this.generateToken(payload, this.config.accessExpiresIn);
 		const refreshToken = this.generateToken(payload, this.config.refreshExpiresIn);
-		const accessResponse = await this.radishClient.set(`access-${accessToken}`, "true");
+		const accessResponse = await this.radishClient?.set(`access-${accessToken}`, "true");
 		if (accessResponse.status !== 201)
 			throw JwtCachError;
 		const refreshResponse = await this.radishClient.set(`refresh-${refreshToken}`, "true");
@@ -73,7 +79,9 @@ class JwtGenerator {
 	}
   
 	public async verifyToken(token: string, type: TokenType): Promise<JwtPayload> {
-		
+		if (this.radishClient === undefined) {
+			throw JwtCachError;
+		}
 		const key = `${type}-${token}`;
 		const status = await this.radishClient.get(key);
 		const value = status?.value;
@@ -88,7 +96,9 @@ class JwtGenerator {
 	}
 
 	public async deleteToken(token: string) {
-
+		if (this.radishClient === undefined) {
+			throw JwtCachError;
+		}
 		const getResponse = await this.radishClient.get(token);
 		if (getResponse.status !== 200) // means token was deleted before or doesnt exists
 			return;

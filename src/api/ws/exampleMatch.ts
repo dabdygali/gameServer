@@ -24,7 +24,7 @@ class ExampleMatch {
         
         this.updateInterval = setInterval(() => {
             this.updator();
-        }, 10)
+        }, 100)
         this.calcInterval = setInterval(() => {
             this.changer();
         }, 10)

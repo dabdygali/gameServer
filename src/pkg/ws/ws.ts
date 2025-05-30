@@ -68,7 +68,7 @@ with this listeners:
     }
 
     private onMessageHandler(client: Client, message: string) {  
-        Logger.info(`${client.id}\t| ${message}`);
+        Logger.info(`${client.id} --> \t| ${message}`);
 
         this.parseMessage(client, message);
     }

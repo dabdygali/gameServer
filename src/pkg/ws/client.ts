@@ -1,4 +1,5 @@
 import { WebSocket } from "@fastify/websocket";
+import Logger from "./logger";
 
 function generator() {
     let id = 0;
@@ -29,10 +30,14 @@ export default class Client {
         if (this.conn.readyState !== WebSocket.OPEN) {
             return ;
         }
-        this.conn.send(JSON.stringify({
+        const data = JSON.stringify({
             type: type,
             payload: payload
-        }));
+        })
+
+        Logger.info(`${this.id} <-- \t| ${data}`);
+
+        this.conn.send(data);
     }
     
     public error(message: string): void {
