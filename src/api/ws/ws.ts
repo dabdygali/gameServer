@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
 import WebSocketProvider from "../../pkg/ws/ws";
-import WS_CLIENT from "./clientSideHanders/handlers";
-import playerMoveDown from "./clientSideHanders/playerMoveDown";
-import playerMoveUp from "./clientSideHanders/playerMoveUp";
-import playerStop from "./clientSideHanders/playerStop";
-import playerMatchJoin from "./clientSideHanders/playerJoin";
+import WS_CLIENT from "./clientSideHandlers/handlers";
+import playerMoveDown from "./clientSideHandlers/playerMoveDown";
+import playerMoveUp from "./clientSideHandlers/playerMoveUp";
+import playerStop from "./clientSideHandlers/playerStop";
+import playerMatchJoin from "./clientSideHandlers/playerJoin";
 
 
 const connectionListeners = {

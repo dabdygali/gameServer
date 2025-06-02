@@ -4,6 +4,7 @@ import registerWebSocketRoutes from './api/ws/ws'
 import RadishClient from './pkg/client/client'
 import Config from './config/Config'
 import { setUpJwtGenerator } from './pkg/jwt/JwtGenerator'
+import Server from "./lib/server"
 
 const app = Fastify()
 

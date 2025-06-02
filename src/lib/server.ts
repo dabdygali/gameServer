@@ -1,34 +1,26 @@
 import Match from "./match"
 import Fastify, { fastify, FastifyInstance } from "fastify"
 
-const PORT: number = 80;
-
 export default class Server {
-	// static #instance: Server;
-	static readonly #fastify: FastifyInstance = fastify();
 	static readonly #isInternalConstructing: boolean = false;
 
 	static #matches:Array<Match> = [];
-	static #keys:Map<Match, Map<number, string>> = new Map<Match, Map<number, string>>();
-	static #participants:Map<string, Match> = new Map<string, Match>();
+	static #participants:Map<number, Match> = new Map<number, Match>();
 
 	private constructor() {
 		throw new TypeError("Server is not constructable");
 	}
 
-	// static #createInstance() :void {
-	// 	if (Server.#instance)
-	// 		return;
-	// 	Server.#isInternalConstructing = true;
-	// 	Server.#instance = new Server();
-	// 	Server.#isInternalConstructing = false;
-	// 	return;
-	// }
-
-	public static listen(port:number = PORT){
+	public static createMatch(id: number, player1: number, player2: number) {
+		if (Server.#matches.find(match => match.id === id))
+			throw new Error(`Match with ID ${id} already exists`);
+		Server.#matches.concat(new Match(id, player1, player2));
 	}
 
-	// static {
-	// 	Server.#createInstance();
-	// }
+	public static deleteMatch(id: number) {
+		const index: number = Server.#matches.findIndex(match => match.id === id);
+		if (index < 0)
+			throw new Error(`Match with ID ${id} is not found`);
+		Server.#matches.splice(index, 1);
+	}
 }
