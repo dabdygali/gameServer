@@ -1,5 +1,7 @@
 import Scene from "./scene"
 
+const MAX_SCORE: number = 10;
+
 export default class Match {
 	public readonly	player1:	number;
 	public readonly	player2:	number;
