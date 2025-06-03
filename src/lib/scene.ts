@@ -41,12 +41,18 @@ export default class Scene {
 									speed: PADDLE_SPEED,
 									originX: paddle2PosX,
 									originY: paddle2PosY })
-		const ballSpeedX = Math.random() < 0.5 ? -BALL_SPEED_X : BALL_SPEED_X;
-		const ballSpeedY = Math.random() < 0.5 ? -BALL_SPEED_Y : BALL_SPEED_Y;
+		const ballSpeedX = Scene.randomNegate(BALL_SPEED_X);
+		const ballSpeedY = Scene.randomNegate(BALL_SPEED_Y);
 		this.ball = new SquareBall({ length: BALL_LENGTH,
 									 speedX: ballSpeedX,
 									 speedY: ballSpeedY,
 									 originX: ballPosX,
 									 originY: ballPosY })
+	}
+
+	private static randomNegate(num: number): number {
+		if (Math.random() < 0.5)
+			return -num;
+		return num;
 	}
 }
