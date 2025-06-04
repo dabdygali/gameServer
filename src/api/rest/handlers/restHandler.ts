@@ -9,26 +9,26 @@ type matchCreateBody = {
 
 export async function restHandler(request: FastifyRequest, reply: FastifyReply) {
 	const body = request.body as matchCreateBody;
-	const matchID:number = body.id;
-	if (typeof matchID !== 'number' || Number.isNaN(matchID) || !Number.isFinite(matchID)) {
+	const matchId:number = body.id;
+	if (typeof matchId !== 'number' || Number.isNaN(matchId) || !Number.isFinite(matchId)) {
 		reply.code(400).send({ error: 'Invalid match ID. It must be a number.'});
 		return;
 	}
 
-	const player1: number = body.players[0];
-	if (typeof player1 !== 'number' || Number.isNaN(player1) || !Number.isFinite(player1)) {
-		reply.code(400).send({ error: 'Invalid player1 ID. It must be a number.'});
+	const user1Id: number = body.players[0];
+	if (typeof user1Id !== 'number' || Number.isNaN(user1Id) || !Number.isFinite(user1Id)) {
+		reply.code(400).send({ error: 'Invalid user1Id ID. It must be a number.'});
 		return;
 	}
 
-	const player2: number = body.players[1];
-	if (typeof player2 !== 'number' || Number.isNaN(player2) || !Number.isFinite(player2)) {
-		reply.code(400).send({ error: 'Invalid player2 ID. It must be a number.'});
+	const user2Id: number = body.players[1];
+	if (typeof user2Id !== 'number' || Number.isNaN(user2Id) || !Number.isFinite(user2Id)) {
+		reply.code(400).send({ error: 'Invalid user2Id ID. It must be a number.'});
 		return;
 	}
 	
 	try {
-		Server.createMatch(matchID, player1, player2);
+		Server.createMatch(matchId, user1Id, user2Id);
 	} catch (e) {
 		reply.code(400).send(e);
 		return;
