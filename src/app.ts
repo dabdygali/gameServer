@@ -5,13 +5,12 @@ import RadishClient from './pkg/client/client'
 import Config from './config/Config'
 import { setUpJwtGenerator } from './pkg/jwt/JwtGenerator'
 import Server from "./lib/server"
+import loggerMiddleware from './pkg/middlewares/loggerMiddleware'
 
 const app = Fastify()
 
 async function main() {
   const config = new Config()
-
-  console.log({config})
 
   const cacheClient = new RadishClient({
     host: config.radishHost,
@@ -24,11 +23,12 @@ async function main() {
   await registerRestRoutes(app)
   await registerWebSocketRoutes(app)
 
+  app.addHook('onRequest', loggerMiddleware);
 
-  app.listen({ port: config.port }, (err, address) => {
+  app.listen({ port: config.port, host: config.host }, (err, address) => {
     if (err) {
       app.log.error(err)
-      process.exit(1)
+      process.exit(1) 
     }
     console.log("Server listening at " + address)
   })
