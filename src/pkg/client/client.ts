@@ -26,6 +26,11 @@ export default class RadishClient {
 	}
 
 	private connect(): net.Socket {
+		if (this.conn) {
+			this.conn.removeAllListeners();
+			this.conn.destroy();
+		}
+
 		const port = this.config.port;
 		const host = this.config.host;
 
@@ -35,12 +40,12 @@ export default class RadishClient {
 			this.config.onConnect?.();
 			console.log('RadishClient info : connected to server.');
 		});
-
-		socket.on('error', (err) => {
+	
+		socket.once('error', (err) => {
 			console.error('RadishClient error : connection establishment failed :', err.message);
 		});
-
-		socket.on('close', () => {
+	
+		socket.once('close', () => {
 			if (this.isConnected) {
 				console.error('RadishClient error : connection closed.');
 			}
@@ -49,10 +54,11 @@ export default class RadishClient {
 				this.reconnect();
 			}
 		});
-
+	
 		this.conn = socket;
 		return socket;
 	}
+	
 
 	private reconnect() {
 		this.reconnecting = true;
