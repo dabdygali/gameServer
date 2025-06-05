@@ -14,7 +14,7 @@ function generator() {
 const clientIdGenerator = generator();
 
 export default class Client {
-    public id:number = clientIdGenerator.next(); // Question: Is it initialized only once? Why?
+    public id:number = clientIdGenerator.next();
     private userId:number|undefined
     private conn:WebSocket;
 
@@ -43,6 +43,10 @@ export default class Client {
     public error(message: string): void {
         this.send("error", message)
     }
+
+	public getUserId(): number | undefined {
+		return this.userId;
+	}
 
     public setUserId(id:number): void {
         if (this.userId === undefined) {

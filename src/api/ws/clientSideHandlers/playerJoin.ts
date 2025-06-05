@@ -22,6 +22,8 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
         return sendUnautorized(client);
     }
 
+	client.setUserId(tokenPayload.userId);
+
     // TODO: Connection(or Reconnection) to the match by userId via class Server
     
     // Assume user as this Client
