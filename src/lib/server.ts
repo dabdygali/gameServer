@@ -6,7 +6,7 @@ import User from "./user";
 export default class Server {
 	static readonly #isInternalConstructing: boolean = false;
 
-	static #matches:Array<Match> = [];
+	//static #matches:Array<Match> = [];
 	static #participants:Map<User, Match> = new Map<User, Match>();
 
 	private constructor() {
@@ -23,7 +23,7 @@ export default class Server {
 		const user1 = new User(user1Id);
 		const user2 = new User(user2Id);
 		const match = new Match(matchId, user1, user2);
-		Server.#matches.concat(match);
+		//Server.#matches.concat(match);
 		Server.#participants.set(user1, match);
 		Server.#participants.set(user2, match);
 	}
@@ -60,6 +60,21 @@ export default class Server {
 		const match: Match = Server.findMatchByUserId(player.id) as Match;
 		if (match === undefined)
 			throw new Error(`Match for user ID ${player.id} not found`);
-		//TODO
+		match.playerStatusChanged(player);
+	}
+
+	public static deleteMatch(match: Match) {
+		const keysToDelete: Array<User> = [];
+		for (const [key, value] of Server.#participants) {
+			if (value === match)
+				keysToDelete.push(key);
+		}
+		for (const key of keysToDelete)
+			Server.#participants.delete(key);
+	}
+
+	public static settleMatch(match: Match) {
+		// TODO post results
+		Server.deleteMatch(match);
 	}
 }
