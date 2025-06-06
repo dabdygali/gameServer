@@ -1,4 +1,6 @@
+import Client from "../pkg/ws/client";
 import Match from "./match"
+import Player from "./player";
 import User from "./user";
 
 export default class Server {
@@ -39,5 +41,25 @@ export default class Server {
 		if (user === undefined)
 			throw new Error(`User with ID ${userId} not found`);
 		return Server.#participants.get(user);
+	}
+
+	public static joinClient(client: Client) {
+		const userId: number = client.getUserId() as number;
+		if (userId === undefined)
+			throw new Error(`User with ID ${userId} not found`);
+		const match: Match = Server.findMatchByUserId(userId) as Match;
+		if (match === undefined)
+			throw new Error(`Match for user ID ${userId} not found`);
+		const player: Player = match.getPlayerByUserId(userId) as Player;
+		if (player === undefined)
+			throw new Error(`Player entity for user ID ${userId} in match ID ${match.id} not found`);
+		player.isOnline = true;
+	}
+
+	public static playerStatusChanged(player: Player) {
+		const match: Match = Server.findMatchByUserId(player.id) as Match;
+		if (match === undefined)
+			throw new Error(`Match for user ID ${player.id} not found`);
+		//TODO
 	}
 }

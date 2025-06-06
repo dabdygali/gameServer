@@ -1,3 +1,4 @@
+import Server from "../../../lib/server";
 import { isTokenValid } from "../../../pkg/jwt/JwtGenerator";
 import Client from "../../../pkg/ws/client";
 import WebSocketRequest from "../../../pkg/ws/request";
@@ -21,10 +22,11 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
     }
 
 	client.setUserId(tokenPayload.userId);
-
-    // TODO: Connection(or Reconnection) to the match by userId via class Server
-    example.addClient(client);
-
+	try {
+		Server.joinClient(client);
+	} catch(e) {
+		sendUnautorized(client);
+	}
     // Assume user as this Client
     sendAuthorized(client);
 }

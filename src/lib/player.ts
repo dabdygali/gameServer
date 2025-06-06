@@ -1,3 +1,4 @@
+import Server from "./server";
 import User from "./user";
 
 type PaddleCommand = "STOP" | "UP" | "DOWN";
@@ -17,6 +18,8 @@ export default class Player extends User {
 	}
 
 	public set isOnline(status: boolean) {
+		if (this._isOnline !== status)
+			Server.playerStatusChanged(this);
 		this._isOnline = status;
 	}
 }
