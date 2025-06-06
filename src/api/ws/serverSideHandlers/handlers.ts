@@ -6,6 +6,7 @@ enum WS_SERVER {
     // Gameplay
     Sync = 'sync',
     MatchStart = 'match_start',
+	MatchOver = 'match_over',
     MatchOpponentConnected = 'match_opponent_connected',
     MatchOpponentDisconnected = 'match_opponent_disconnected',
     MatchOpponentReconnected = 'match_opponent_reconnected',

@@ -1,3 +1,4 @@
+import Match from "../../../lib/match";
 import Server from "../../../lib/server";
 import { isTokenValid } from "../../../pkg/jwt/JwtGenerator";
 import Client from "../../../pkg/ws/client";
@@ -24,19 +25,23 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
     }
 
 	client.setUserId(tokenPayload.userId);
+	sendMatchOpponentConnected(client);
 	try {
 		Server.joinClient(client);
 	} catch(e) {
 		sendUnautorized(client);
+		return;
 	}
-    // Assume user as this Client
-    client.setUserId(tokenPayload.userId)
     
+	const match: Match = Server.findMatchByUserId(tokenPayload.userId) as Match;
+	if (match === undefined)
+		throw new Error(`Match for user ID ${tokenPayload.userId} not found`);
+	// TODO send init data
     const isOpponentConnected = false;
     const isMatchInProgress = false;
     const matchInfo = {
-        player1: {id: 1, score: 0},
-        player2: {id: 2, score: 0},
+        player1: {id: match.getPlayer1().id, score: match.getScore()[0]},
+        player2: {id: match.getPlayer2().id, score: match.getScore()[1]},
         timeLeft: isOpponentConnected ? 5 : 30, // 30 seconds for connect, 5 seconds for match start
         isMatchReady: isOpponentConnected ? true : undefined, // flag assumes everything is ready to start the match
     }

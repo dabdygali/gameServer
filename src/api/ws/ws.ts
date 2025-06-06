@@ -9,6 +9,7 @@ import Client from "../../pkg/ws/client";
 import Server from "../../lib/server";
 import Match from "../../lib/match";
 import Player from "../../lib/player";
+import sendMatchOpponentDisconnected from "./serverSideHandlers/matchOpponentDisconnected";
 
 function updatePlayerStatus(client: Client) {
 	const userId: number = client.getUserId() as number;
@@ -21,6 +22,7 @@ function updatePlayerStatus(client: Client) {
 	if (player === undefined)
 		throw new Error(`Player entity for user ID ${userId} not found`);
 	player.isOnline = false;
+	sendMatchOpponentDisconnected(client);
 }
 
 const connectionListeners = {

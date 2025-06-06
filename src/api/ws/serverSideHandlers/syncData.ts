@@ -1,6 +1,7 @@
 import Client from "../../../pkg/ws/client"
 import WS_SERVER from "./handlers"
 
+// TODO
 type GameState = {
     player1Pos:number
     player2Pos:number

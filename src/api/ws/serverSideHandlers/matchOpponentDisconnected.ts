@@ -5,8 +5,9 @@ type MatchOpponentDisconnectedInfo = {
     timeLeft?: number,
 }
 
-export default function sendMatchOpponentDisconnected(client:Client, isAllConnected: boolean) {
+export default function sendMatchOpponentDisconnected(client:Client) {
     
+	// TODO
     // Should follow this logic:
     // 1. By client instance and userId inside it, try to get current match
     // 2. If current match is exists send an appropriate message to all players in the match

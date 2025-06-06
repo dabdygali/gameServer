@@ -1,3 +1,6 @@
+import sendMatchOver from "../api/ws/serverSideHandlers/matchOver";
+import sendMatchStart from "../api/ws/serverSideHandlers/matchStart";
+import Client from "../pkg/ws/client";
 import Player from "./player";
 import Scene from "./scene"
 import Server from "./server";
@@ -15,7 +18,7 @@ const TICK_PERIOD: number = 1000 / TICK_RATE; // in milliseconds
 export default class Match {
 	private readonly player1:	Player;
 	private readonly player2:	Player;
-	private readonly scene:		Scene;
+	public readonly scene:		Scene;
 	private			 timeoutId: NodeJS.Timeout | null = null;
 	private 		 intervalId: NodeJS.Timeout | null = null;
 	public readonly	id:			number;
@@ -34,7 +37,19 @@ export default class Match {
 		this.timeoutId = null;
 		this.intervalId = null;
 
-		this.startFailTimer(TIME_TO_CONNECT);
+		this.startGameOverTimer(TIME_TO_CONNECT);
+	}
+
+	public getStatus() {
+		return this.status;
+	}
+
+	public getPlayer1() {
+		return this.player1;
+	}
+
+	public getPlayer2() {
+		return this.player2;
 	}
 
 	public getResult() {
@@ -53,37 +68,21 @@ export default class Match {
 		return undefined;
 	}
 
-	private fail() {
-		this.stopInterval();
-		this.stopFailTimer();
-		if (this.status === "CREATED" || (!this.player1.isOnline && !this.player2.isOnline))
-			this.result = "FAIL";
-		else if (this.status === "STARTED") {
-			if (this.player1.isOnline)
-				this.result = "P1WIN";
-			else
-				this.result = "P2WIN";
-		}
-		this.status = "SETTLED";
-		Server.settleMatch(this);
-	}
-
 	public playerStatusChanged(player: Player) {
 		if (this.player1.isOnline && this.player2.isOnline && this.status !== "SETTLED")
-		{
 			this.play();
-		} else if (this.status === "STARTED") {
+		else if (this.status === "STARTED")
 			this.pause();
-		}
 	}
 
-	private startFailTimer(delay?: number) {
+	private startGameOverTimer(delay?: number) {
 		if (this.timeoutId)
-			throw new Error(`Match ID ${this.id}: startFailTimer called while timer is already active`);
-		this.timeoutId = setTimeout(() => this.fail(), delay ?? TIME_TO_RECONNECT);
+			throw new Error(`Match ID ${this.id}: startGameOverTimer called while timer is already active`);
+		this.timeoutId = setTimeout(() => this.gameOver(), delay ?? TIME_TO_RECONNECT);
+		//TODO send time left to connect
 	}
 
-	private stopFailTimer() {
+	private stopGameOverTimer() {
 		if (this.timeoutId)
 			clearTimeout(this.timeoutId);
 		this.timeoutId = null;
@@ -105,28 +104,53 @@ export default class Match {
 		// TODO
 		// scene calcs
 		// update scores
+		// sync front
 		// if someone wins stopInterval
 		// call gameOver;
 	}
 
 	private play() {
-		this.stopFailTimer();
+		this.stopGameOverTimer();
+		sendMatchStart(this.player1.client as Client);
+		sendMatchStart(this.player2.client as Client);
 		this.startInterval(() => this.simulateTick, TICK_PERIOD);
 	}
 
 	private gameOver() {
 		this.stopInterval();
-		this.stopFailTimer();
+		this.stopGameOverTimer();
+
+		switch (this.status) {
+			case "CREATED":
+				this.result = "FAIL";
+				break;
+			case "STARTED":
+				if (this.score[0] >= POINTS_TO_WIN)
+					this.result = "P1WIN";
+				else if (this.score[1] >= POINTS_TO_WIN)
+					this.result = "P2WIN";
+				else if (this.player1.isOnline && !this.player2.isOnline)
+					this.result = "P1WIN";
+				else if (!this.player1.isOnline && this.player2.isOnline)
+					this.result = "P2WIN";
+				else
+					this.result = "FAIL";
+				break;
+			case "SETTLED":
+				break;
+			default:
+				break;
+		}
 		this.status = "SETTLED";
-		if (this.score[0] > this.score[1])
-			this.result = "P1WIN";
-		else
-			this.result = "P2WIN";
+		if (this.player1.isOnline)
+			sendMatchOver(this.player1.client as Client, this.result);
+		if (this.player2.isOnline)
+			sendMatchOver(this.player2.client as Client, this.result);
 		Server.settleMatch(this);
 	}
 
 	private pause() {
 		this.stopInterval();
-		this.startFailTimer(TIME_TO_RECONNECT);
+		this.startGameOverTimer(TIME_TO_RECONNECT);
 	}
 }

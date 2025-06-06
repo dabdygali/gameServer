@@ -53,6 +53,7 @@ export default class Server {
 		const player: Player = match.getPlayerByUserId(userId) as Player;
 		if (player === undefined)
 			throw new Error(`Player entity for user ID ${userId} in match ID ${match.id} not found`);
+		player.client = client;
 		player.isOnline = true;
 	}
 
@@ -73,8 +74,35 @@ export default class Server {
 			Server.#participants.delete(key);
 	}
 
+	public static async postMatchResult(match: Match) {
+		const status: number = (match.getResult() === "P1WIN" || match.getResult() === "P2WIN") ? 1 : 2;
+		const results: Array<{userId: number, place: number}> = [
+			{
+				userId: match.getPlayer1().id,
+				place: match.getResult() === "P1WIN" ? 0 : 1
+			}, 
+			{
+				userId: match.getPlayer2().id,
+				place: match.getResult() === "P2WIN" ? 0 : 1
+			}
+		];
+		try {
+			const response = await fetch(`localhost:5001/mmrs/internal/match/${match.id}/rate`, 
+				{
+					method: "POST",
+					body: JSON.stringify(
+						{	status,
+							results
+						}
+					)
+				});
+			} catch (e) {
+				console.log("Error trying to post match results to MMRS", e);
+			}
+	}
+
 	public static settleMatch(match: Match) {
-		// TODO post results
+		Server.postMatchResult(match);
 		Server.deleteMatch(match);
 	}
 }
