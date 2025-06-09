@@ -11,7 +11,7 @@ import Match from "../../lib/match";
 import Player from "../../lib/player";
 import sendMatchOpponentDisconnected from "./serverSideHandlers/matchOpponentDisconnected";
 
-function updatePlayerStatus(client: Client) {
+function updatePlayerStatusOffline(client: Client) {
 	const userId: number = client.getUserId() as number;
 	if (userId === undefined)
 		throw new Error(`User with ID ${userId} not found`);
@@ -27,7 +27,7 @@ function updatePlayerStatus(client: Client) {
 
 const connectionListeners = {
     onConnect: undefined,
-    onDisconnect: updatePlayerStatus,
+    onDisconnect: updatePlayerStatusOffline,
     onError: undefined,    
 }
 

@@ -24,10 +24,10 @@ const ballPosX: number		= tableCenterX - (BALL_LENGTH / 2);
 const ballPosY: number		= tableCenterY - (BALL_LENGTH / 2);
 
 export default class Scene {
-	private readonly pongTable: PongTable;
-	private	readonly paddle1: Paddle;
-	private readonly paddle2: Paddle;
-	private readonly ball: SquareBall;
+	public readonly pongTable: PongTable;
+	public readonly paddle1: Paddle;
+	public readonly paddle2: Paddle;
+	public readonly ball: SquareBall;
 
 	public constructor() {
 		this.pongTable = new PongTable(TABLE_LENGTH, TABLE_WIDTH);

@@ -1,5 +1,6 @@
 import sendMatchOver from "../api/ws/serverSideHandlers/matchOver";
 import sendMatchStart from "../api/ws/serverSideHandlers/matchStart";
+import sendSync from "../api/ws/serverSideHandlers/syncData";
 import Client from "../pkg/ws/client";
 import Player from "./player";
 import Scene from "./scene"
@@ -18,8 +19,9 @@ const TICK_PERIOD: number = 1000 / TICK_RATE; // in milliseconds
 export default class Match {
 	private readonly player1:	Player;
 	private readonly player2:	Player;
-	public readonly scene:		Scene;
+	public readonly  scene:		Scene;
 	private			 timeoutId: NodeJS.Timeout | null = null;
+	private			 timeoutStamp: number | null = null;
 	private 		 intervalId: NodeJS.Timeout | null = null;
 	public readonly	id:			number;
 	private			result:		"P1WIN" | "P2WIN" | "LIVE" | "FAIL" = "LIVE";
@@ -35,6 +37,7 @@ export default class Match {
 		this.result = "LIVE";
 		this.status = "CREATED";
 		this.timeoutId = null;
+		this.timeoutStamp = null;
 		this.intervalId = null;
 
 		this.startGameOverTimer(TIME_TO_CONNECT);
@@ -78,6 +81,7 @@ export default class Match {
 	private startGameOverTimer(delay?: number) {
 		if (this.timeoutId)
 			throw new Error(`Match ID ${this.id}: startGameOverTimer called while timer is already active`);
+		this.timeoutStamp = Date.now() + (delay ?? TIME_TO_RECONNECT);
 		this.timeoutId = setTimeout(() => this.gameOver(), delay ?? TIME_TO_RECONNECT);
 		//TODO send time left to connect
 	}
@@ -85,6 +89,7 @@ export default class Match {
 	private stopGameOverTimer() {
 		if (this.timeoutId)
 			clearTimeout(this.timeoutId);
+		this.timeoutStamp = null;
 		this.timeoutId = null;
 	}
 
@@ -105,6 +110,9 @@ export default class Match {
 		// scene calcs
 		// update scores
 		// sync front
+		const gameState = this.getGameState();
+		sendSync(this.player1.client as Client, gameState);
+		sendSync(this.player2.client as Client, gameState);
 		// if someone wins stopInterval
 		// call gameOver;
 	}
@@ -152,5 +160,72 @@ export default class Match {
 	private pause() {
 		this.stopInterval();
 		this.startGameOverTimer(TIME_TO_RECONNECT);
+	}
+
+	public getTimoutStamp(): number | null {
+		return this.timeoutStamp;
+	}
+
+	public getMatchInfo() {
+		return {
+			player1: {
+				id: this.player1.id,
+				score: this.score[0],
+				isOnline: this.player1.isOnline,
+			},
+			player2: {
+				id: this.player2.id,
+				score: this.score[1],
+				isOnline: this.player2.isOnline,
+			},
+			timeoutStamp: this.timeoutStamp,
+			scene: {
+				table: {
+					length: this.scene.pongTable.length,
+					width: this.scene.pongTable.width,
+				},
+				paddle1: {
+					length: this.scene.paddle1.length,
+					width: this.scene.paddle1.width,
+					topLeftCornerPosX: this.scene.paddle1.cornerTopLeft.x,
+					topLeftCornerPosY: this.scene.paddle1.cornerTopLeft.y,
+					speed: this.scene.paddle1.speed,
+				},
+				paddle2: {
+					length: this.scene.paddle2.length,
+					width: this.scene.paddle2.width,
+					topLeftCornerPosX: this.scene.paddle2.cornerTopLeft.x,
+					topLeftCornerPosY: this.scene.paddle2.cornerTopLeft.y,
+					speed: this.scene.paddle2.speed,
+				},
+				ball: {
+					length: this.scene.ball.length,
+					width: this.scene.ball.width,
+					topLeftCornerPosX: this.scene.ball.cornerTopLeft.x,
+					topLeftCornerPosY: this.scene.ball.cornerTopLeft.y,
+					speedX: this.scene.ball.speedX,
+					speedY: this.scene.ball.speedY
+				},
+			}
+		}
+	}
+
+	public getGameState() {
+		return {
+			paddle1: {
+				topLeftCornerPosX: this.scene.paddle1.cornerTopLeft.x,
+				topLeftCornerPosY: this.scene.paddle1.cornerTopLeft.y,
+			},
+			paddle2: {
+				topLeftCornerPosX: this.scene.paddle2.cornerTopLeft.x,
+				topLeftCornerPosY: this.scene.paddle2.cornerTopLeft.y,
+			},
+			ball: {
+				topLeftCornerPosX: this.scene.ball.cornerTopLeft.x,
+				topLeftCornerPosY: this.scene.ball.cornerTopLeft.y,
+				speedX: this.scene.ball.speedX,
+				speedY: this.scene.ball.speedY
+			},
+		}
 	}
 }

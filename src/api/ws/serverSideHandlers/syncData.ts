@@ -3,10 +3,20 @@ import WS_SERVER from "./handlers"
 
 // TODO
 type GameState = {
-    player1Pos:number
-    player2Pos:number
-    ballX:number
-    ballY:number
+	paddle1: {
+		topLeftCornerPosX: number,
+		topLeftCornerPosY: number,
+	},
+	paddle2: {
+		topLeftCornerPosX: number,
+		topLeftCornerPosY: number,
+	},
+	ball: {
+		topLeftCornerPosX: number,
+		topLeftCornerPosY: number,
+		speedX: number,
+		speedY: number,
+	},
 }
 
 

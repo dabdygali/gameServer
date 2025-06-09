@@ -1,3 +1,5 @@
+import Match from "../../../lib/match";
+import Server from "../../../lib/server";
 import Client from "../../../pkg/ws/client"
 import WS_SERVER from "./handlers"
 
@@ -7,17 +9,16 @@ type MatchOpponentDisconnectedInfo = {
 
 export default function sendMatchOpponentDisconnected(client:Client) {
     
-	// TODO
-    // Should follow this logic:
-    // 1. By client instance and userId inside it, try to get current match
-    // 2. If current match is exists send an appropriate message to all players in the match
-    // 3. If current match is not exists, do nothing (connected by misstake)
-    // 4. Send in the message timeLeft that equal 30 seconds and assumes time to reconnect
-    
-    
-    // const payload:MatchOpponentDisconnectedInfo = {
-    //     timeLeft: isAllConnected ? 5 : undefined
-    // }
-
-    // client.send(WS_SERVER.MatchOpponentDisconnected, payload)
+	const userId: number = client.getUserId() as number;
+	if (userId === undefined)
+		throw new Error(`User with ID ${userId} not found`);
+	const match: Match = Server.findMatchByUserId(userId) as Match;
+	if (match === undefined)
+		throw new Error(`Match for user ID ${userId} not found`);
+	let opponent: Client;
+	if (match.getPlayer1().id === userId)
+		opponent = match.getPlayer2().client as Client;
+	else
+		opponent = match.getPlayer1().client as Client;
+	opponent.send(WS_SERVER.MatchOpponentDisconnected, {timeoutStamp: match.getTimoutStamp()});
 }
