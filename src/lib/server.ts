@@ -95,15 +95,14 @@ export default class Server {
 			}
 		];
 		try {
-			const response = await fetch(`localhost:5001/mmrs/internal/match/${match.id}/rate`, 
-				{
-					method: "POST",
-					body: JSON.stringify(
-						{	status,
-							results
-						}
-					)
-				});
+			const response = await fetch(`localhost:5001/mmrs/internal/match/${match.id}/rate`, {
+				headers: { 'Content-Type': 'application/json' },
+				method: "POST",
+				body: JSON.stringify({	
+					status,
+					results
+				})
+			});
 			} catch (e) {
 				console.log("Error trying to post match results to MMRS", e);
 			}
