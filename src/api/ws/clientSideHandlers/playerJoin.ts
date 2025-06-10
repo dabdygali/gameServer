@@ -2,6 +2,7 @@ import Match from "../../../lib/match";
 import Server from "../../../lib/server";
 import { isTokenValid } from "../../../pkg/jwt/JwtGenerator";
 import Client from "../../../pkg/ws/client";
+import Logger from "../../../pkg/ws/logger";
 import WebSocketRequest from "../../../pkg/ws/request";
 import sendAuthorized from "../serverSideHandlers/authorized";
 import sendMatchOpponentConnected from "../serverSideHandlers/matchOpponentConnected";
@@ -30,7 +31,7 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
 		sendUnautorized(client);
 		return;
 	}
-    
+
 	const match: Match = Server.findMatchByUserId(tokenPayload.userId) as Match;
 	if (match === undefined)
 		throw new Error(`Match for user ID ${tokenPayload.userId} not found`);

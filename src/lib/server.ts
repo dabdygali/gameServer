@@ -95,7 +95,7 @@ export default class Server {
 			}
 		];
 		try {
-			const response = await fetch(`localhost:5001/mmrs/internal/match/${match.id}/rate`, {
+			const response = await fetch(`http://localhost:5001/mmrs/internal/match/${match.id}/rate`, {
 				headers: { 'Content-Type': 'application/json' },
 				method: "POST",
 				body: JSON.stringify({	
@@ -110,6 +110,8 @@ export default class Server {
 
 	public static settleMatch(match: Match) {
 		Server.postMatchResult(match);
+		match.getPlayer1().client?.close();
+		match.getPlayer2().client?.close();
 		Server.deleteMatch(match);
 	}
 }
