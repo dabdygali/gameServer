@@ -69,6 +69,13 @@ export default class Scene {
 		}
 	}
 
+	private static isOverlapedRanges(start1:number, end1:number, start2: number, end2:number): boolean {
+		if (end1 < start2 || end2 < start1)
+			return false;
+		else
+			return true;
+	}
+
 	private moveBall(): Array<number> {
 		const goal: Array<number> = [0, 0];
 		const nextPosX: number = this.ball.cornerTopLeft.x + this.ball.speedX;
@@ -85,17 +92,37 @@ export default class Scene {
 			finalPosY = nextPosY - this.pongTable.width;
 			finalSpeedY = -this.ball.speedY;
 		}
-		if (nextPosX < 0) {
-			goal[1] = 1;
+		if (nextPosX < 0 || nextPosX > this.pongTable.length - this.ball.length) {
+			if (nextPosX < 0)
+				goal[1] = 1;
+			else
+				goal[0] = 1;
 			finalPosX = ballPosX;
 			finalPosY = ballPosY;
 			finalSpeedX = Scene.randomNegate(BALL_SPEED_X);
 			finalSpeedY = Scene.randomNegate(BALL_SPEED_Y);
-		} else if (nextPosX > this.pongTable.length - this.ball.length) {
-			goal[0] = 1;
-			this.ball.cornerTopLeft.x = ballPosX;
-			this.ball.cornerTopLeft.y = ballPosY;
+		} else {
+			if (nextPosX <= this.paddle1.cornerTopLeft.x + this.paddle1.length) {
+				// current Y pos check
+				if (Scene.isOverlapedRanges(this.ball.cornerTopLeft.y,
+					this.ball.cornerTopLeft.y + this.ball.width,
+					this.paddle1.cornerTopLeft.y,
+					this.paddle1.cornerTopLeft.y + this.paddle1.width)) {
+						finalPosX = 2 * this.paddle1.cornerTopLeft.x + 2 * this.paddle1.length - nextPosX;
+				}
+			} else if (nextPosX >= this.paddle2.cornerTopLeft.x - this.ball.length) {
+				if (Scene.isOverlapedRanges(this.ball.cornerTopLeft.y,
+					this.ball.cornerTopLeft.y + this.ball.width,
+					this.paddle2.cornerTopLeft.y,
+					this.paddle2.cornerTopLeft.y + this.paddle1.width)) {
+						finalPosX = 2 * this.paddle2.cornerTopLeft.x - nextPosX;
+				}
+			}
 		}
+		this.ball.cornerTopLeft.x = finalPosX;
+		this.ball.cornerTopLeft.y = finalPosY;
+		this.ball.speedX = finalSpeedX;
+		this.ball.speedY = finalSpeedY;
 		return goal;
 	}
 
