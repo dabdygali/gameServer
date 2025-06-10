@@ -34,22 +34,8 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
 	const match: Match = Server.findMatchByUserId(tokenPayload.userId) as Match;
 	if (match === undefined)
 		throw new Error(`Match for user ID ${tokenPayload.userId} not found`);
-
-	// TODO send init data
-    const isOpponentConnected = false;
-    const isMatchInProgress = false;
+	
     const matchInfo = match.getMatchInfo();
 
     sendAuthorized(client, matchInfo)
-    
-    // If opponent is connected and match is in progress
-    if (isOpponentConnected && isMatchInProgress) {
-        // const opponent = new Client()
-        // sendMatchOpponentReconnected(opponent, true);
-    
-    // If opponet is connected and match is not in progress
-    } else if (isOpponentConnected) {
-        // const opponent = new Client()
-        // sendMatchOpponentConnected(opponent, true);
-    }
 }

@@ -83,7 +83,6 @@ export default class Match {
 			throw new Error(`Match ID ${this.id}: startGameOverTimer called while timer is already active`);
 		this.timeoutStamp = Date.now() + (delay ?? TIME_TO_RECONNECT);
 		this.timeoutId = setTimeout(() => this.gameOver(), delay ?? TIME_TO_RECONNECT);
-		//TODO send time left to connect
 	}
 
 	private stopGameOverTimer() {
