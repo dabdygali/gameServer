@@ -5,29 +5,11 @@ import playerMoveDown from "./clientSideHandlers/playerMoveDown";
 import playerMoveUp from "./clientSideHandlers/playerMoveUp";
 import playerStop from "./clientSideHandlers/playerStop";
 import playerMatchJoin from "./clientSideHandlers/playerJoin";
-import Client from "../../pkg/ws/client";
-import Server from "../../lib/server";
-import Match from "../../lib/match";
-import Player from "../../lib/player";
-import sendMatchOpponentDisconnected from "./serverSideHandlers/matchOpponentDisconnected";
-
-function updatePlayerStatusOffline(client: Client) {
-	const userId: number = client.getUserId() as number;
-	if (userId === undefined)
-		throw new Error(`User with ID ${userId} not found`);
-	const match: Match = Server.findMatchByUserId(userId) as Match;
-	if (match === undefined)
-		throw new Error(`Match for user ID ${userId} not found`);
-	const player = match.getPlayerByUserId(userId) as Player;
-	if (player === undefined)
-		throw new Error(`Player entity for user ID ${userId} not found`);
-	player.isOnline = false;
-	sendMatchOpponentDisconnected(client);
-}
+import onClientDisconnect from "./callbacks/onClientDisconnect";
 
 const connectionListeners = {
     onConnect: undefined,
-    onDisconnect: updatePlayerStatusOffline,
+    onDisconnect: onClientDisconnect,
     onError: undefined,    
 }
 
