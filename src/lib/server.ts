@@ -14,7 +14,7 @@ export default class Server {
 	}
 
 	public static createMatch(matchId: number, user1Id: number, user2Id: number) {
-		if (Server.findMatchByUserId(matchId))
+		if (Server.findMatchById(matchId))
 			throw new Error(`Match with ID ${matchId} already exists`);
 		if (Server.findUserByID(user1Id))
 			throw new Error(`User with ID ${user1Id} already exists`);
@@ -41,6 +41,14 @@ export default class Server {
 		if (user === undefined)
 			throw new Error(`User with ID ${userId} not found`);
 		return Server.#participants.get(user);
+	}
+
+	public static findMatchById(matchId: number): Match | undefined {
+		for (const match of Server.#participants.values()) {
+			if (match.id === matchId)
+				return match;
+		}
+		return undefined;
 	}
 
 	public static joinClient(client: Client) {
