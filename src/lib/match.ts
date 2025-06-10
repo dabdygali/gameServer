@@ -107,7 +107,10 @@ export default class Match {
 	private simulateTick() {
 		// TODO
 		// scene calcs
+		const goal: Array<number> = this.scene.calcScene(this.player1.command, this.player2.command);
 		// update scores
+		this.score[0] += goal[0];
+		this.score[1] += goal[1];
 		// sync front
 		const gameState = this.getGameState();
 		sendSync(this.player1.client as Client, gameState);

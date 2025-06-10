@@ -55,4 +55,54 @@ export default class Scene {
 			return -num;
 		return num;
 	}
+
+	private movePaddle(paddle: Paddle, command: string) {
+		if (command === "UP") {
+			paddle.cornerTopLeft.y -= paddle.speed;
+			if (paddle.cornerTopLeft.y < 0)
+				paddle.cornerTopLeft.y = 0;
+		}
+		if (command === "DOWN") {
+			paddle.cornerTopLeft.y += paddle.speed;
+			if (paddle.cornerTopLeft.y + paddle.width > this.pongTable.width)
+				paddle.cornerTopLeft.y = this.pongTable.width - paddle.width;
+		}
+	}
+
+	private moveBall(): Array<number> {
+		const goal: Array<number> = [0, 0];
+		const nextPosX: number = this.ball.cornerTopLeft.x + this.ball.speedX;
+		const nextPosY: number = this.ball.cornerTopLeft.y + this.ball.speedY;
+		let finalPosX: number = this.ball.cornerTopLeft.x;
+		let finalPosY: number = this.ball.cornerTopLeft.y;;
+		let finalSpeedX: number = this.ball.speedX;
+		let finalSpeedY: number = this.ball.speedY;
+
+		if (nextPosY < 0) {
+			finalPosY = -nextPosY;
+			finalSpeedY = -this.ball.speedY;
+		} else if (nextPosY > this.pongTable.width - this.ball.width) {
+			finalPosY = nextPosY - this.pongTable.width;
+			finalSpeedY = -this.ball.speedY;
+		}
+		if (nextPosX < 0) {
+			goal[1] = 1;
+			finalPosX = ballPosX;
+			finalPosY = ballPosY;
+			finalSpeedX = Scene.randomNegate(BALL_SPEED_X);
+			finalSpeedY = Scene.randomNegate(BALL_SPEED_Y);
+		} else if (nextPosX > this.pongTable.length - this.ball.length) {
+			goal[0] = 1;
+			this.ball.cornerTopLeft.x = ballPosX;
+			this.ball.cornerTopLeft.y = ballPosY;
+		}
+		return goal;
+	}
+
+	public calcScene(p1Command: string, p2Command: string): Array<number> {
+		this.movePaddle(this.paddle1, p1Command);
+		this.movePaddle(this.paddle2, p2Command);
+		const goal: Array<number> = this.moveBall();
+		return goal;
+	}
 }
