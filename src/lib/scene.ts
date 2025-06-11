@@ -117,6 +117,9 @@ export default class Scene {
 					this.paddle2.cornerTopLeft.y + this.paddle1.width)) {
 						finalPosX = 2 * this.paddle2.cornerTopLeft.x - nextPosX;
 				}
+			} else {
+				finalPosX = nextPosX;
+				finalPosY = nextPosY;
 			}
 		}
 		this.ball.cornerTopLeft.x = finalPosX;

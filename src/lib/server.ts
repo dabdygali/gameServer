@@ -6,7 +6,6 @@ import User from "./user";
 export default class Server {
 	static readonly #isInternalConstructing: boolean = false;
 
-	//static #matches:Array<Match> = [];
 	static #participants:Map<User, Match> = new Map<User, Match>();
 
 	private constructor() {
@@ -23,7 +22,6 @@ export default class Server {
 		const user1 = new User(user1Id);
 		const user2 = new User(user2Id);
 		const match = new Match(matchId, user1, user2);
-		//Server.#matches.concat(match);
 		Server.#participants.set(user1, match);
 		Server.#participants.set(user2, match);
 	}

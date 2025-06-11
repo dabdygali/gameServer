@@ -18,8 +18,9 @@ export default class Player extends User {
 	}
 
 	public set isOnline(status: boolean) {
-		if (this._isOnline !== status)
-			Server.playerStatusChanged(this);
+		const prevStatus: boolean = this._isOnline;
 		this._isOnline = status;
+		if (prevStatus !== status)
+			Server.playerStatusChanged(this);
 	}
 }

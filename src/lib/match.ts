@@ -11,7 +11,7 @@ import User from "./user";
 const POINTS_TO_WIN: number = 10;
 const TIME_TO_CONNECT: number = 30000; // in milliseconds
 const TIME_TO_RECONNECT: number = 30000; // in milliseconds
-const TICK_RATE: number = 20; // times per second (Hz)
+const TICK_RATE: number = 0.1; // times per second (Hz)
 
 // Initializtion data
 const TICK_PERIOD: number = 1000 / TICK_RATE; // in milliseconds
@@ -72,8 +72,10 @@ export default class Match {
 	}
 
 	public playerStatusChanged(player: Player) {
-		if (this.player1.isOnline && this.player2.isOnline && this.status !== "SETTLED")
+		if (this.player1.isOnline && this.player2.isOnline && this.status !== "SETTLED") {
+			this.status = "STARTED";
 			this.play();
+		}
 		else if (this.status === "STARTED")
 			this.pause();
 	}
@@ -95,7 +97,7 @@ export default class Match {
 	private startInterval(callback: () => void, delay?: number) {
 		if (this.intervalId)
 			throw new Error(`Match ID ${this.id}: startInterval called while is already active`);
-		this.intervalId = setInterval(callback, delay ?? TICK_PERIOD);
+		this.intervalId = setInterval(() => this.simulateTick(), delay ?? TICK_PERIOD);
 	}
 
 	private stopInterval() {
@@ -105,7 +107,6 @@ export default class Match {
 	}
 
 	private simulateTick() {
-		// TODO
 		// scene calcs
 		const goal: Array<number> = this.scene.calcScene(this.player1.command, this.player2.command);
 		// update scores
@@ -115,8 +116,9 @@ export default class Match {
 		const gameState = this.getGameState();
 		sendSync(this.player1.client as Client, gameState);
 		sendSync(this.player2.client as Client, gameState);
-		// if someone wins stopInterval
-		// call gameOver;
+		// if someone wins gameOver
+		if (this.score[0] >= POINTS_TO_WIN || this.score[1] >= POINTS_TO_WIN)
+			this.gameOver();
 	}
 
 	private play() {
