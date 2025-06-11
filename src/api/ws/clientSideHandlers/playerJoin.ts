@@ -5,6 +5,7 @@ import Client from "../../../pkg/ws/client";
 import Logger from "../../../pkg/ws/logger";
 import WebSocketRequest from "../../../pkg/ws/request";
 import sendAuthorized from "../serverSideHandlers/authorized";
+import sendError from "../serverSideHandlers/error";
 import sendMatchOpponentConnected from "../serverSideHandlers/matchOpponentConnected";
 import sendUnauthorized from "../serverSideHandlers/unauthorized";
 import WS_CLIENT from "./handlers";
@@ -28,13 +29,13 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
 	try {
 		Server.joinClient(client);
 	} catch(e) {
-		sendUnauthorized(client);
-		return;
+		return sendError(client, "Unable to join match");
 	}
 
 	const match: Match = Server.findMatchByUserId(tokenPayload.userId) as Match;
-	if (match === undefined)
-		throw new Error(`Match for user ID ${tokenPayload.userId} not found`);
+	if (match === undefined) { 
+        return sendError(client, "Match not found");
+    }
 	
     const matchInfo = match.getMatchInfo();
 
