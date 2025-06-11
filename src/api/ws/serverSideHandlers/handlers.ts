@@ -1,4 +1,6 @@
 enum WS_SERVER {
+    Error = 'error',
+
     // Authorization
     Authorized = 'authorized',
     Unauthorized = 'unauthorized',
