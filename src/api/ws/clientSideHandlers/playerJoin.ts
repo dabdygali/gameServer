@@ -25,7 +25,11 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
     }
 
 	client.setUserId(tokenPayload.userId);
-	sendMatchOpponentConnected(client);
+	try {
+		sendMatchOpponentConnected(client);
+	} catch (e) {
+		return sendError(client, `Failed to notify the opponent: ${e}`);
+	}
 	try {
 		Server.joinClient(client);
 	} catch(e) {

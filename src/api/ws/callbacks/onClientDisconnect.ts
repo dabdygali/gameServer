@@ -7,15 +7,15 @@ import sendMatchOpponentDisconnected from "../serverSideHandlers/matchOpponentDi
 function updatePlayerStatusOffline(client: Client) {
 	const userId: number = client.getUserId() as number;
 	if (userId === undefined)
-		throw new Error(`User with ID ${userId} not found`);
+		return;
 
 	const match: Match = Server.findMatchByUserId(userId) as Match;
 	if (match === undefined)
-		throw new Error(`Match for user ID ${userId} not found`);
+		return;
     
 	const player = match.getPlayerByUserId(userId) as Player;
 	if (player === undefined)
-		throw new Error(`Player entity for user ID ${userId} not found`);
+		return;
 	player.isOnline = false;
 	sendMatchOpponentDisconnected(client);
 }

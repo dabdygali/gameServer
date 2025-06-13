@@ -1,4 +1,5 @@
 import sendMatchOver from "../api/ws/serverSideHandlers/matchOver";
+import sendMatchScoreUpdate from "../api/ws/serverSideHandlers/matchScoreUpdate";
 import sendMatchStart from "../api/ws/serverSideHandlers/matchStart";
 import sendSync from "../api/ws/serverSideHandlers/syncData";
 import Client from "../pkg/ws/client";
@@ -11,7 +12,7 @@ import User from "./user";
 const POINTS_TO_WIN: number = 10;
 const TIME_TO_CONNECT: number = 30000; // in milliseconds
 const TIME_TO_RECONNECT: number = 30000; // in milliseconds
-const TICK_RATE: number = 20; // times per second (Hz)
+const TICK_RATE: number = 5; // times per second (Hz)
 
 // Initializtion data
 const TICK_PERIOD: number = 1000 / TICK_RATE; // in milliseconds
@@ -113,6 +114,9 @@ export default class Match {
 		this.score[0] += goal[0];
 		this.score[1] += goal[1];
 		// sync front
+		if (goal[0] > 0 || goal[1] > 0) {
+			sendMatchScoreUpdate(this.player1.client as Client, {player1Score: this.score[0], player2Score: this.score[1]});
+		}
 		const gameState = this.getGameState();
 		sendSync(this.player1.client as Client, gameState);
 		sendSync(this.player2.client as Client, gameState);

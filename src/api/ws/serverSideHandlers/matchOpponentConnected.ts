@@ -23,7 +23,7 @@ export default function sendMatchOpponentConnected(client:Client) {
 		opponent = match.getPlayer1().client as Client;
 
 	if (!opponent){ 
-		return ; 
+		return; 
 	}
 	opponent.send(WS_SERVER.MatchOpponentConnected);
 }
