@@ -116,6 +116,7 @@ export default class Match {
 		// sync front
 		if (goal[0] > 0 || goal[1] > 0) {
 			sendMatchScoreUpdate(this.player1.client as Client, {player1Score: this.score[0], player2Score: this.score[1]});
+			sendMatchScoreUpdate(this.player2.client as Client, {player1Score: this.score[0], player2Score: this.score[1]});
 		}
 		const gameState = this.getGameState();
 		sendSync(this.player1.client as Client, gameState);

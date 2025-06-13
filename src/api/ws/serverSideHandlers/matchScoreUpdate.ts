@@ -7,5 +7,5 @@ type MatchScoreUpdateInfo = {
 }
 
 export default function sendMatchScoreUpdate(client:Client, score: MatchScoreUpdateInfo) {
-    client.send(WS_SERVER.Error, score)
+    client.send(WS_SERVER.MatchScoreUpdate, score)
 }
