@@ -9,9 +9,12 @@ function updatePlayerStatusOffline(client: Client) {
 	if (userId === undefined)
 		return;
 
-	const match: Match = Server.findMatchByUserId(userId) as Match;
-	if (match === undefined)
+	let match: Match;
+	try {
+		match = Server.findMatchByUserId(userId) as Match;
+	} catch (e) {
 		return;
+	}
     
 	const player = match.getPlayerByUserId(userId) as Player;
 	if (player === undefined)

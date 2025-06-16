@@ -9,10 +9,10 @@ import Server from "./server";
 import User from "./user";
 
 // Input parameters
-const POINTS_TO_WIN: number = 10;
+const POINTS_TO_WIN: number = 1;
 const TIME_TO_CONNECT: number = 30000; // in milliseconds
 const TIME_TO_RECONNECT: number = 30000; // in milliseconds
-const TICK_RATE: number = 5; // times per second (Hz)
+const TICK_RATE: number = 20; // times per second (Hz)
 
 // Initializtion data
 const TICK_PERIOD: number = 1000 / TICK_RATE; // in milliseconds
