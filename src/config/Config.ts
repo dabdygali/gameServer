@@ -7,6 +7,7 @@ export default class Config {
     public readonly radishPort:number;
     public readonly port:number;
     public readonly mode:string;
+    public static readonly pointsToWin:number = parseInt(process.env.POINTS_TO_WIN || "") || 10;
 
     constructor() {
         this.radishHost = process.env.RADISH_HOST || "localhost";

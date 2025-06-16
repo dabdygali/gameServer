@@ -2,6 +2,7 @@ import sendMatchOver from "../api/ws/serverSideHandlers/matchOver";
 import sendMatchScoreUpdate from "../api/ws/serverSideHandlers/matchScoreUpdate";
 import sendMatchStart from "../api/ws/serverSideHandlers/matchStart";
 import sendSync from "../api/ws/serverSideHandlers/syncData";
+import Config from "../config/Config";
 import Client from "../pkg/ws/client";
 import Player from "./player";
 import Scene from "./scene"
@@ -9,7 +10,7 @@ import Server from "./server";
 import User from "./user";
 
 // Input parameters
-const POINTS_TO_WIN: number = 10;
+const POINTS_TO_WIN: number = Config.pointsToWin;
 const TIME_TO_CONNECT: number = 30000; // in milliseconds
 const TIME_TO_RECONNECT: number = 30000; // in milliseconds
 const TICK_RATE: number = 20; // times per second (Hz)
