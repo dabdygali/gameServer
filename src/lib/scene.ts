@@ -179,9 +179,6 @@ export default class Scene {
 		const entryTime = Math.max(txEntry, tyEntry);
 		const exitTime = Math.min(txExit, tyExit);
 
-		// Debugging log
-		console.log("Here---->", this.ball, paddle, {dxEntry, dxExit, dyEntry, dyExit, txEntry, txExit, tyEntry, tyExit, entryTime, exitTime});
-
 		if (entryTime > exitTime || dxEntry < 0 && dyEntry < 0 || entryTime > 1)
 			return false;
 		else
