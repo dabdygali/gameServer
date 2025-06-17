@@ -15,7 +15,7 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
     // Receive accessToken from payload
     const payload = request.payload as {accessToken: string};
     if (!payload || !payload.accessToken) {
-        return sendUnauthorized(client);
+        return sendError(client, "Access token is required");
     }
     
     // Validate token and if it's valid get its payload

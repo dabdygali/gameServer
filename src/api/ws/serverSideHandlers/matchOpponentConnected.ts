@@ -10,11 +10,11 @@ type MatchOpponentConnectedInfo = {
 export default function sendMatchOpponentConnected(client:Client) {
 	const userId: number = client.getUserId() as number;
 	if (userId === undefined)
-		throw new Error(`User with ID ${userId} not found`);
+		throw new Error(`Match for current user not found`);
 
 	const match: Match = Server.findMatchByUserId(userId) as Match;
 	if (match === undefined)
-		throw new Error(`Match for user ID ${userId} not found`);
+		throw new Error(`Match for current user not found`);
 	
 	let opponent: Client;
 	if (match.getPlayer1().id === userId)
