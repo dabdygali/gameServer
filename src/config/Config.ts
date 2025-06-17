@@ -8,6 +8,7 @@ export default class Config {
     public readonly port:number;
     public readonly mode:string;
     public static readonly pointsToWin:number = parseInt(process.env.POINTS_TO_WIN || "") || 10;
+    public static readonly mmrsAddress:string = process.env.MMRS_ADDR || "localhost:5001/mmrs";
 
     constructor() {
         this.radishHost = process.env.RADISH_HOST || "localhost";

@@ -1,3 +1,4 @@
+import Config from "../config/Config";
 import Client from "../pkg/ws/client";
 import Match from "./match"
 import Player from "./player";
@@ -93,11 +94,12 @@ export default class Server {
 			}
 		];
 		try {
-			const response = await fetch(`http://localhost:5001/mmrs/internal/match/${match.id}/rate`, {
+			console.log("mmrs: ", Config.mmrsAddress);
+			const response = await fetch(`http://${Config.mmrsAddress}/internal/match/${match.id}/rate`, {
 				headers: { 'Content-Type': 'application/json' },
 				method: "POST",
 				body: JSON.stringify({	
-					status,
+					status,	
 					results
 				})
 			});
