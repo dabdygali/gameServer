@@ -96,7 +96,7 @@ export default class Match {
 		this.timeoutId = null;
 	}
 
-	private startInterval(callback: () => void, delay?: number) {
+	private startInterval(delay?: number) {
 		if (this.intervalId)
 			throw new Error(`Match ID ${this.id}: startInterval called while is already active`);
 		this.intervalId = setInterval(() => this.simulateTick(), delay ?? TICK_PERIOD);
@@ -114,24 +114,24 @@ export default class Match {
 		// update scores
 		this.score[0] += goal[0];
 		this.score[1] += goal[1];
-		// sync front
 		if (goal[0] > 0 || goal[1] > 0) {
 			sendMatchScoreUpdate(this.player1.client as Client, {player1Score: this.score[0], player2Score: this.score[1]});
 			sendMatchScoreUpdate(this.player2.client as Client, {player1Score: this.score[0], player2Score: this.score[1]});
 		}
-		const gameState = this.getGameState();
-		sendSync(this.player1.client as Client, gameState);
-		sendSync(this.player2.client as Client, gameState);
 		// if someone wins gameOver
 		if (this.score[0] >= POINTS_TO_WIN || this.score[1] >= POINTS_TO_WIN)
 			this.gameOver();
+		// sync front
+		const gameState = this.getGameState();
+		sendSync(this.player1.client as Client, gameState);
+		sendSync(this.player2.client as Client, gameState);
 	}
 
 	private play() {
 		this.stopGameOverTimer();
 		sendMatchStart(this.player1.client as Client);
 		sendMatchStart(this.player2.client as Client);
-		this.startInterval(() => this.simulateTick, TICK_PERIOD);
+		this.startInterval(TICK_PERIOD);
 	}
 
 	private gameOver() {

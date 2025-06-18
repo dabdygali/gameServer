@@ -30,18 +30,17 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
 	} catch (e) {
 		return sendError(client, `Failed to notify the opponent: ${e}`);
 	}
+
+    const match: Match = Server.findMatchByUserId(tokenPayload.userId) as Match;
+	if (match === undefined) { 
+        return sendError(client, "Match not found");
+    }
+    const matchInfo = match.getMatchInfo();
+    sendAuthorized(client, matchInfo);
+    
 	try {
 		Server.joinClient(client);
 	} catch(e) {
 		return sendError(client, "Unable to join match");
 	}
-
-	const match: Match = Server.findMatchByUserId(tokenPayload.userId) as Match;
-	if (match === undefined) { 
-        return sendError(client, "Match not found");
-    }
-	
-    const matchInfo = match.getMatchInfo();
-
-    sendAuthorized(client, matchInfo)
 }

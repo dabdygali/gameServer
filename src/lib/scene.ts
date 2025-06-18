@@ -80,17 +80,17 @@ export default class Scene {
 		const goal: Array<number> = [0, 0];
 		const nextPosX: number = this.ball.cornerTopLeft.x + this.ball.speedX;
 		const nextPosY: number = this.ball.cornerTopLeft.y + this.ball.speedY;
-		let finalPosX: number = this.ball.cornerTopLeft.x;
-		let finalPosY: number = this.ball.cornerTopLeft.y;;
+		let finalPosX: number = nextPosX;
+		let finalPosY: number = nextPosY;
 		let finalSpeedX: number = this.ball.speedX;
 		let finalSpeedY: number = this.ball.speedY;
 
 		if (nextPosY <= 0) {
 			finalPosY = -nextPosY;
-			finalSpeedY = -this.ball.speedY;
+			finalSpeedY = Math.abs(this.ball.speedY);
 		} else if (nextPosY >= this.pongTable.width - this.ball.width) {
 			finalPosY = 2 * this.pongTable.width - nextPosY - 2 * this.ball.width;
-			finalSpeedY = -this.ball.speedY;
+			finalSpeedY = -Math.abs(this.ball.speedY);
 		}
 		if (nextPosX < 0 || nextPosX > this.pongTable.length - this.ball.length) {
 			if (nextPosX < 0)
@@ -103,33 +103,31 @@ export default class Scene {
 			finalSpeedY = Scene.randomNegate(BALL_SPEED_Y);
 		} else {
 			if (nextPosX <= this.paddle1.cornerTopLeft.x + this.paddle1.length && this.ball.cornerTopLeft.x > this.paddle1.cornerTopLeft.x + this.paddle1.length) {
-				// current Y pos check
-				// if (Scene.isOverlapedRanges(this.ball.cornerTopLeft.y,
-				// 	this.ball.cornerTopLeft.y + this.ball.width,
-				// 	this.paddle1.cornerTopLeft.y,
-				// 	this.paddle1.cornerTopLeft.y + this.paddle1.width)) {}
 				if (this.isPaddleHit()) {
 						finalPosX = 2 * this.paddle1.cornerTopLeft.x + 2 * this.paddle1.length - nextPosX;
 						finalSpeedX = -this.ball.speedX;
-				} else {
-					finalPosX = nextPosX;
-					finalPosY = nextPosY;
-				}
+						// Side hits
+						if (this.ball.cornerTopLeft.y <= this.paddle1.cornerTopLeft.y + this.paddle1.width * 0.25) {
+							finalSpeedX *= 1.1;
+							finalSpeedY = -Math.abs(finalSpeedY);
+						} else if (this.ball.cornerTopLeft.y >= this.paddle1.cornerTopLeft.y + this.paddle1.width * 0.75) {
+							finalSpeedX *= 1.1;
+							finalSpeedY = Math.abs(finalSpeedY);
+						}
+				} 
 			} else if (nextPosX >= this.paddle2.cornerTopLeft.x - this.ball.length && this.ball.cornerTopLeft.x < this.paddle2.cornerTopLeft.x - this.ball.length) {
-				// if (Scene.isOverlapedRanges(this.ball.cornerTopLeft.y,
-				// 	this.ball.cornerTopLeft.y + this.ball.width,
-				// 	this.paddle2.cornerTopLeft.y,
-				// 	this.paddle2.cornerTopLeft.y + this.paddle1.width)) {}
 				if (this.isPaddleHit()) {
 						finalPosX = 2 * this.paddle2.cornerTopLeft.x - nextPosX -  2 * this.ball.length;
 						finalSpeedX = -this.ball.speedX;
-				} else {
-					finalPosX = nextPosX;
-					finalPosY = nextPosY;
+						// Side hits
+						if (this.ball.cornerTopLeft.y <= this.paddle2.cornerTopLeft.y + this.paddle2.width * 0.25) {
+							finalSpeedX *= 1.1;
+							finalSpeedY = -Math.abs(finalSpeedY);
+						} else if (this.ball.cornerTopLeft.y >= this.paddle2.cornerTopLeft.y + this.paddle2.width * 0.75) {
+							finalSpeedX *= 1.1;
+							finalSpeedY = Math.abs(finalSpeedY);
+						}
 				}
-			} else {
-				finalPosX = nextPosX;
-				finalPosY = nextPosY;
 			}
 		}
 		this.ball.cornerTopLeft.x = finalPosX;
@@ -147,6 +145,7 @@ export default class Scene {
 	}
 
 	public isPaddleHit(): boolean {
+		// Swept Axis-Aligned Bounding Box
 		let dxEntry, dxExit, dyEntry, dyExit: number;
 		let paddle: Paddle;
 		if (this.ball.speedX > 0) {
