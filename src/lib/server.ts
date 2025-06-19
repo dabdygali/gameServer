@@ -114,4 +114,15 @@ export default class Server {
 		match.getPlayer2().client?.close();
 		Server.deleteMatch(match);
 	}
+
+	public static stop() {
+		const done: Array<Match> = [];
+
+		for (const match of Server.#participants.values()) {
+			if (done.find((element) => element.id === match.id))
+				continue;
+			match.gameOver();
+			done.concat(match);
+		}
+	}
 }

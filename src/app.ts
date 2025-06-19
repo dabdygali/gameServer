@@ -37,7 +37,25 @@ async function main() {
       process.exit(1) 
     }
     console.log("Server listening at " + address)
-  })
+  });
+
+  process.on('SIGINT', async () => {
+    Server.stop();
+    await app.close();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    Server.stop();
+    await app.close();
+    process.exit(0);
+  });
+
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    Server.stop();
+    process.exit(1);
+  });
 }
 
 main()

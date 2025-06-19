@@ -134,7 +134,7 @@ export default class Match {
 		this.startInterval(TICK_PERIOD);
 	}
 
-	private gameOver() {
+	public gameOver() {
 		this.stopInterval();
 		this.stopGameOverTimer();
 
