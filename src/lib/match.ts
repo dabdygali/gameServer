@@ -167,9 +167,9 @@ export default class Match {
 		}
 		this.status = "SETTLED";
 		if (this.player1.isOnline)
-			sendMatchOver(this.player1.client as Client, this.result);
+			sendMatchOver(this.player1.client as Client, this.result, this.mode);
 		if (this.player2.isOnline)
-			sendMatchOver(this.player2.client as Client, this.result);
+			sendMatchOver(this.player2.client as Client, this.result, this.mode);
 		Server.settleMatch(this);
 	}
 
