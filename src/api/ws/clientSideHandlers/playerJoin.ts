@@ -25,6 +25,13 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
     }
 
 	client.setUserId(tokenPayload.userId);
+
+	try {
+		Server.joinClient(client);
+	} catch(e) {
+		return sendError(client, "Unable to join match");
+	}
+	
 	try {
 		sendMatchOpponentConnected(client);
 	} catch (e) {
@@ -37,10 +44,4 @@ export default async function playerMatchJoin(client:Client, request: WebSocketR
     }
     const matchInfo = match.getMatchInfo();
     sendAuthorized(client, matchInfo);
-    
-	try {
-		Server.joinClient(client);
-	} catch(e) {
-		return sendError(client, "Unable to join match");
-	}
 }
