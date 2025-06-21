@@ -13,7 +13,7 @@ export default class Server {
 		throw new TypeError("Server is not constructable");
 	}
 
-	public static createMatch(matchId: number, user1Id: number, user2Id: number) {
+	public static createMatch(matchId: number, user1Id: number, user2Id: number, mode: number) {
 		if (Server.findMatchById(matchId))
 			throw new Error(`Match with ID ${matchId} already exists`);
 		if (Server.findUserByID(user1Id))
@@ -22,7 +22,7 @@ export default class Server {
 			throw new Error(`User with ID ${user2Id} already exists`);
 		const user1 = new User(user1Id);
 		const user2 = new User(user2Id);
-		const match = new Match(matchId, user1, user2);
+		const match = new Match(matchId, user1, user2, mode);
 		Server.#participants.set(user1, match);
 		Server.#participants.set(user2, match);
 	}
@@ -100,12 +100,13 @@ export default class Server {
 				method: "POST",
 				body: JSON.stringify({	
 					status,	
-					results
+					results,
+					isTournament: match.getMode() === 2,
 				})
 			});
-			} catch (e) {
-				console.log("Error trying to post match results to MMRS", e);
-			}
+		} catch (e) {
+			console.log("Error trying to post match results to MMRS", e);
+		}
 	}
 
 	public static settleMatch(match: Match) {

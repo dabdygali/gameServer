@@ -5,10 +5,12 @@ import { error } from 'console';
 type matchCreateBody = {
 	id:number,
 	players: Array<number>,
+	mode:number,
 }
 
 export async function restHandler(request: FastifyRequest, reply: FastifyReply) {
 	const body = request.body as matchCreateBody;
+	console.log("restHandler body", body);
 	const matchId:number = body.id;
 	if (typeof matchId !== 'number' || Number.isNaN(matchId) || !Number.isFinite(matchId)) {
 		reply.code(400).send({ error: 'Invalid match ID. It must be a number.'});
@@ -26,9 +28,15 @@ export async function restHandler(request: FastifyRequest, reply: FastifyReply) 
 		reply.code(400).send({ error: 'Invalid user2Id ID. It must be a number.'});
 		return;
 	}
+
+	const mode:number = body.mode;
+	if (typeof mode !== 'number' || Number.isNaN(mode) || !Number.isFinite(mode) || (mode != 1 && mode != 2)) {
+		reply.code(400).send({ error: 'Invalid mode. It must be a number.'});
+		return;
+	}
 	
 	try {
-		Server.createMatch(matchId, user1Id, user2Id);
+		Server.createMatch(matchId, user1Id, user2Id, mode);
 	} catch (e) {
 		reply.code(400).send(e);
 		return;

@@ -22,6 +22,7 @@ export default class Match {
 	private readonly player1:	Player;
 	private readonly player2:	Player;
 	public readonly  scene:		Scene;
+	private 		 mode:		number;
 	private			 timeoutId: NodeJS.Timeout | null = null;
 	private			 timeoutStamp: number | null = null;
 	private 		 intervalId: NodeJS.Timeout | null = null;
@@ -30,7 +31,7 @@ export default class Match {
 	private			score:		Array<number>;
 	private			status:		"CREATED" | "STARTED" | "SETTLED" = "CREATED";
 
-	constructor(id: number, user1: User, user2: User) {
+	constructor(id: number, user1: User, user2: User, mode: number) {
 		this.player1 = new Player(user1);
 		this.player2 = new Player(user2);
 		this.id = id;
@@ -41,6 +42,7 @@ export default class Match {
 		this.timeoutId = null;
 		this.timeoutStamp = null;
 		this.intervalId = null;
+		this.mode = mode;
 
 		this.startGameOverTimer(TIME_TO_CONNECT);
 	}
@@ -63,6 +65,10 @@ export default class Match {
 	
 	public getScore() {
 		return this.score;
+	}
+
+	public getMode() {
+		return this.mode;
 	}
 
 	public getPlayerByUserId(userId: number): Player | undefined {
