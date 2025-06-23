@@ -90,7 +90,7 @@ export default class Match {
 
 	private startGameOverTimer(delay?: number) {
 		if (this.timeoutId)
-			throw new Error(`Match ID ${this.id}: startGameOverTimer called while timer is already active`);
+			return;
 		this.timeoutStamp = Date.now() + (delay ?? TIME_TO_RECONNECT);
 		this.timeoutId = setTimeout(() => this.gameOver(), delay ?? TIME_TO_RECONNECT);
 	}
