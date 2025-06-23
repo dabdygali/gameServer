@@ -36,7 +36,8 @@ export default class RadishRequest {
             conn.once('data', dataHandler);
             conn.once('error', errorHandler);        
         });
-
+    }
+    
     static request(type: RequestType, data: Record<string, any>) {
         return new RadishRequest(type, data);
     }
