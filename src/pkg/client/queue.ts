@@ -11,7 +11,6 @@ export default class RequestQueue {
         this.client = client;
     }
 
-    // Добавить новую задачу в очередь
     add<T>(task: Task<T>): Promise<T> {
         return new Promise((resolve, reject) => {
             const wrappedTask = () =>
@@ -24,7 +23,6 @@ export default class RequestQueue {
         });
     }
 
-    // Обработка задач по очереди
     private async processNext() {
         if (this.processing){
             return ;
